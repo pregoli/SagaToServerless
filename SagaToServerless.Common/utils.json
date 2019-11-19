@@ -1,0 +1,190 @@
+[
+  //DURABLE
+
+
+
+  //create and assign user to a SPECIFIC group (ProvisionNewUserSingleGroup)
+  {
+    "correlationId": "34c8a352-c45c-416b-8b26-4ce1aa841171",
+    "operatorEmail": "paolo.regoli@coreview.com",
+    "user": {
+      "firstName": "Carlo",
+      "lastName": "Cracco",
+      "userName": "Carlo.Cracco@gmail.com"
+    },
+    "groupId": "4a7d6b0b-d419-4e94-b5a6-147b61d2250d"
+  },
+  //create and assign user to a ALL given groups  (ProvisionNewUserMultipleGroups)
+  {
+    "correlationId": "34c8a352-c15c-406b-8b26-4ce1aa121122",
+    "operatorEmail": "paolo.regoli@coreview.com",
+    "user": {
+      "firstName": "Iginio",
+      "lastName": "Massari",
+      "userName": "Iginio.Massari@gmail.com"
+    },
+    "groupIds": [
+      "4a7d6b0b-d419-4e94-b5a6-147b61d2250d",
+      "68be9a23-5881-4c72-9908-1747d6fffe4a",
+      "50787ae7-55b5-47fc-9dc0-091c3c0fb2e2"
+    ]
+  },
+
+  //Ask to the manager for a user creation APPROVAL then, if positive, create and assign user to a SPECIFIC group (ProvisionNewUserSingleGroup)
+  {
+    "correlationId": "34c8a352-c45c-406b-8b26-4ce1aa841123",
+    "operatorEmail": "paolo.regoli@coreview.com",
+    "user": {
+      "firstName": "Antonino",
+      "lastName": "Cannavacciuolo",
+      "userName": "Antonino.Cannavacciuolo@gmail.com"
+    },
+    "groupId": "4a7d6b0b-d419-4e94-b5a6-147b61d2250d"
+  },
+
+
+
+
+
+
+  //SAGA
+
+  //create and assign user to a SPECIFIC group (ProvisionNewUserSingleGroup)
+  {
+    "messageId": "edc90000-ff59-0003-c9d2-08d705f59244",
+    "correlationId": "aacf038d-6d5d-487c-83f4-07c88269dbd0",
+    "conversationId": "edc90000-ff59-0003-cac6-08d705f59244",
+    "sourceAddress": "rabbitmq://myrtle-toad.rmq.cloudamqp.com:5671/bus-RD0003FF59EDC9-WaWorkerHost-7zroyy89mryygqh4bdmx74s8nn?durable=false&autodelete=true",
+    "destinationAddress": "rabbitmq://myrtle-toad.rmq.cloudamqp.com:5671/Forward365.Common.Messages.Events.Management:PowershellSessionOpenedEvent",
+    "messageType": [
+      "urn:message:SagaToServerless.Common.Commands:ProvisionNewUserSingleGroup",
+      "urn:message:SagaToServerless.Common.Commands:ICommand"
+    ],
+    "message": {
+      "correlationId": "34c8a352-c45c-406b-8b26-4ce1aa841121",
+      "operatorEmail": "paolo.regoli@coreview.com",
+      "user": {
+        "firstName": "Carlo",
+        "lastName": "Cracco",
+        "userName": "Carlo.Cracco@gmail.com"
+      },
+      "groupId": "4a7d6b0b-d419-4e94-b5a6-147b61d2250d"
+    },
+    "headers": {
+
+    },
+    "host": {
+      "machineName": "RD0003FF59EDC9",
+      "processName": "WaWorkerHost",
+      "processId": 2028,
+      "assembly": "MassTransit",
+      "assemblyVersion": "3.5.7.1082",
+      "frameworkVersion": "4.0.30319.42000",
+      "massTransitVersion": "3.5.7.1082",
+      "operatingSystemVersion": "Microsoft Windows NT 6.2.9200.0"
+    }
+  },
+  //create and assign user to a ALL given groups (ProvisionNewUserMultipleGroups)
+  {
+    "messageId": "edc90000-ff59-0003-c9d2-08d705f59244",
+    "correlationId": "aacf038d-6d5d-487c-83f4-07c88269dbd0",
+    "conversationId": "edc90000-ff59-0003-cac6-08d705f59244",
+    "sourceAddress": "rabbitmq://myrtle-toad.rmq.cloudamqp.com:5671/bus-RD0003FF59EDC9-WaWorkerHost-7zroyy89mryygqh4bdmx74s8nn?durable=false&autodelete=true",
+    "destinationAddress": "rabbitmq://myrtle-toad.rmq.cloudamqp.com:5671/Forward365.Common.Messages.Events.Management:PowershellSessionOpenedEvent",
+    "messageType": [
+      "urn:message:SagaToServerless.Common.Commands:ProvisionNewUserMultipleGroups",
+      "urn:message:SagaToServerless.Common.Commands:ICommand"
+    ],
+    "message": {
+      "correlationId": "34c8a352-c15c-406b-8b26-4ce1aa121122",
+      "operatorEmail": "paolo.regoli@coreview.com",
+      "user": {
+        "firstName": "Franco",
+        "lastName": "Baresi",
+        "userName": "Franco.Baresi@gmail.com"
+      },
+      "groupIds": [
+        "4a7d6b0b-d419-4e94-b5a6-147b61d2250d",
+        "68be9a23-5881-4c72-9908-1747d6fffe4a",
+        "50787ae7-55b5-47fc-9dc0-091c3c0fb2e2"
+      ]
+    },
+    "headers": {
+
+    },
+    "host": {
+      "machineName": "RD0003FF59EDC9",
+      "processName": "WaWorkerHost",
+      "processId": 2028,
+      "assembly": "MassTransit",
+      "assemblyVersion": "3.5.7.1082",
+      "frameworkVersion": "4.0.30319.42000",
+      "massTransitVersion": "3.5.7.1082",
+      "operatingSystemVersion": "Microsoft Windows NT 6.2.9200.0"
+    }
+  },
+  //Ask to the manager for a user creation APPROVAL then, if positive, create and assign user to a SPECIFIC group (ProvisionNewUserSingleGroup)
+  {
+    "messageId": "edc90000-ff59-0003-c9d2-08d705f59244",
+    "correlationId": "aacf038d-6d5d-487c-83f4-07c88269dbd0",
+    "conversationId": "edc90000-ff59-0003-cac6-08d705f59244",
+    "sourceAddress": "rabbitmq://myrtle-toad.rmq.cloudamqp.com:5671/bus-RD0003FF59EDC9-WaWorkerHost-7zroyy89mryygqh4bdmx74s8nn?durable=false&autodelete=true",
+    "destinationAddress": "rabbitmq://myrtle-toad.rmq.cloudamqp.com:5671/Forward365.Common.Messages.Events.Management:PowershellSessionOpenedEvent",
+    "messageType": [
+      "urn:message:SagaToServerless.Common.Commands:ProvisionNewUserSingleGroup",
+      "urn:message:SagaToServerless.Common.Commands:ICommand"
+    ],
+    "message": {
+      "correlationId": "34c8a352-c45c-406b-8b26-4ce1aa841121",
+      "operatorEmail": "paolo.regoli@coreview.com",
+      "user": {
+        "firstName": "Mario",
+        "lastName": "Rossi",
+        "userName": "Mario.Rossi@gmail.com"
+      },
+      "groupId": "4a7d6b0b-d419-4e94-b5a6-147b61d2250d"
+    },
+    "headers": {
+
+    },
+    "host": {
+      "machineName": "RD0003FF59EDC9",
+      "processName": "WaWorkerHost",
+      "processId": 2028,
+      "assembly": "MassTransit",
+      "assemblyVersion": "3.5.7.1082",
+      "frameworkVersion": "4.0.30319.42000",
+      "massTransitVersion": "3.5.7.1082",
+      "operatingSystemVersion": "Microsoft Windows NT 6.2.9200.0"
+    }
+  },
+  //APPROVE SAGA
+  {
+    "messageId": "edc90000-ff59-0003-c9d2-08d705f59244",
+    "correlationId": "a17fd3af-fe86-4059-bf18-611190071c2d",
+    "conversationId": "edc90000-ff59-0003-cac6-08d705f59244",
+    "sourceAddress": "rabbitmq://myrtle-toad.rmq.cloudamqp.com:5671/bus-RD0003FF59EDC9-WaWorkerHost-7zroyy89mryygqh4bdmx74s8nn?durable=false&autodelete=true",
+    "destinationAddress": "rabbitmq://myrtle-toad.rmq.cloudamqp.com:5671/Forward365.Common.Messages.Events.Management:PowershellSessionOpenedEvent",
+    "messageType": [
+      "urn:message:SagaToServerless.Common.Commands:SendApproval",
+      "urn:message:SagaToServerless.Common.Commands:ICommand"
+    ],
+    "message": {
+      "correlationId": "a17fd3af-fe86-4059-bf18-611190071c2d",
+      "approved": true
+    },
+    "headers": {
+
+    },
+    "host": {
+      "machineName": "RD0003FF59EDC9",
+      "processName": "WaWorkerHost",
+      "processId": 2028,
+      "assembly": "MassTransit",
+      "assemblyVersion": "3.5.7.1082",
+      "frameworkVersion": "4.0.30319.42000",
+      "massTransitVersion": "3.5.7.1082",
+      "operatingSystemVersion": "Microsoft Windows NT 6.2.9200.0"
+    }
+  }
+]

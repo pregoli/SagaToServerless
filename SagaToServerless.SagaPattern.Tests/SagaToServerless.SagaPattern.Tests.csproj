@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+    <PackageReference Include="coverlet.collector" Version="1.0.1" />
+    <PackageReference Include="Automatonymous" Version="4.1.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
+    <PackageReference Include="Castle.Core" Version="4.4.0" />
+    <PackageReference Include="FluentAssertions" Version="5.6.0" />
+    <PackageReference Include="GreenPipes" Version="2.1.4" />
+    <PackageReference Include="MassTransit" Version="5.3.2" />
+    <PackageReference Include="MassTransit.Automatonymous" Version="5.3.2" />
+    <PackageReference Include="MassTransit.AzureServiceBus" Version="5.3.2" />
+    <PackageReference Include="MassTransit.MongoDb" Version="5.3.2" />
+    <PackageReference Include="MassTransit.TestFramework" Version="5.3.2" />
+    <PackageReference Include="Moq" Version="4.12.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
+    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SagaToServerless.Common\SagaToServerless.Common.csproj" />
+    <ProjectReference Include="..\SagaToServerless.SagaPattern\SagaToServerless.SagaPattern.csproj" />
+  </ItemGroup>
+
+</Project>

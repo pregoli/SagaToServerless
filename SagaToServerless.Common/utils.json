@@ -1,8 +1,7 @@
 [
-  //DURABLE
+  //http://localhost:7071/runtime/webhooks/durabletask/instances/{INSTANCEID}?showInput=true&showHistory=true&showHistoryOutput=true
 
-
-
+  //*******DURABLE
   //create and assign user to a SPECIFIC group (ProvisionNewUserSingleGroup)
   {
     "correlationId": "34c8a352-c45c-416b-8b26-4ce1aa841171",
@@ -42,13 +41,7 @@
     "groupId": "4a7d6b0b-d419-4e94-b5a6-147b61d2250d"
   },
 
-
-
-
-
-
-  //SAGA
-
+  //*******SAGA
   //create and assign user to a SPECIFIC group (ProvisionNewUserSingleGroup)
   {
     "messageId": "edc90000-ff59-0003-c9d2-08d705f59244",

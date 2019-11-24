@@ -14,10 +14,10 @@ This repository contains an example of workflow runs by adopting the <b>Saga Pat
  2. If the user assignment to the group will fail, the group reference will be removed from the previously created user, as compensation action.
 
 ## Before to get started
-1. Insaltt ***.Net Core 2+*** on your local machine.
-1. Create/Enable ***RabbitMQ*** to run locally.
-2. Install ***MongoDB*** and make it run locally.
-3. Create a test ***SendGrid*** account.
+1. Install [**.Net Core 2.1**](https://dotnet.microsoft.com/download/dotnet-core/2.1) on your local machine.
+1. Create/Enable [**RabbitMQ**](https://www.rabbitmq.com/download.html) to run locally.
+2. Install [**MongoDB**](https://docs.mongodb.com/manual/installation/) and make it run locally.
+3. Create a test [**SendGrid**](https://sendgrid.com/) account.
 
 ## Get started
 Clone the repository.
@@ -39,4 +39,14 @@ Create a file in the root of the ***SagaToServerless.Durable*** project named lo
 }
 ```
 
-If you prefer to use the storage emulator, you can then use the value ***UseDevelopmentStorage=true*** for the key **AzureWebJobsStorage**
+If you prefer to use the storage emulator, you can use the value ***UseDevelopmentStorage=true*** for the key **AzureWebJobsStorage**.
+
+You will find three Orchestrators in the project:
+
+1. ProvisionUserWithSingleGroupOrchestrator: It will be started from the trigger function ***TriggerUserProvisioningChainingWorkflow*** listening from the **chainingqueue** on RabbitMQ.
+
+2. ProvisionUserWithMultipleGroupsOrchestrator: It will be started from the trigger function ***TriggerUserProvisioningFanInFanOutWorkflow*** listening from the **faninfanoutqueue** on RabbitMQ.
+
+3. ProvisionUserOrchestratorApproval: It will be started from the trigger function ***TriggerUserProvisioningApprovalWorkflow*** listening from the **approvalqueue** on RabbitMQ.
+
+You can find example of commands for durable functions to send from RabbitMQ in the project ***SagaToServerless.Common***, file ***utils.json***

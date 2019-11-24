@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains an example of workflow runs by adopting the [**Saga Pattern**](https://github.com/pregoli/SagaToServerless/tree/master/SagaToServerless.SagaPattern) from a side and [**Durable functions**](https://github.com/pregoli/SagaToServerless/tree/master/SagaToServerless) from other.
+This repository contains an example of workflow runs by adopting the [**Saga Pattern**](https://masstransit-project.com/usage/sagas/) from a side and [**Durable functions**](https://docs.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview) from other.
 </br></br>The workflow contains the following steps:
 - Start user provisioning
 - Create user with a group reference

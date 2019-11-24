@@ -49,4 +49,4 @@ You will find three Orchestrators in the project:
 
 3. ProvisionUserOrchestratorApproval: It will be started from the trigger function ***TriggerUserProvisioningApprovalWorkflow*** listening from the **approvalqueue** on RabbitMQ.
 
-You can find example of commands for durable functions to send from RabbitMQ in the project ***SagaToServerless.Common***, file ***utils.json***
+You can find example of commands for durable functions to send from RabbitMQ in the project ***SagaToServerless.Common***, file [***utils.json***](https://github.com/pregoli/SagaToServerless/blob/master/SagaToServerless.Common/utils.json)

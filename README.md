@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains an example of workflow runs by adopting the <b>Saga Pattern</b> from a side and <b>Durable functions</b> from other.
+This repository contains an example of workflow runs by adopting the [**Saga Pattern**](https://github.com/pregoli/SagaToServerless/tree/master/SagaToServerless.SagaPattern) from a side and [**Durable functions**](https://github.com/pregoli/SagaToServerless/tree/master/SagaToServerless) from other.
 </br></br>The workflow contains the following steps:
 - Start user provisioning
 - Create user with a group reference
@@ -22,8 +22,8 @@ This repository contains an example of workflow runs by adopting the <b>Saga Pat
 ## Get started
 Clone the repository.
 
-**DURABLE FUNCTIONS**: Run the project ***SagaToServerless.Durable*** locally from Visual Studio 2019.</br>
-Create a file in the root of the ***SagaToServerless.Durable*** project named local.settings.json and populate it as shown below:
+**DURABLE FUNCTIONS**: Run the project [***SagaToServerless.Durable***](https://github.com/pregoli/SagaToServerless/tree/master/SagaToServerless) locally from Visual Studio 2019.</br>
+Create a file in the root of the [***SagaToServerless.Durable***](https://github.com/pregoli/SagaToServerless/tree/master/SagaToServerless) project named local.settings.json and populate it as shown below:
 ```
 {
   "IsEncrypted": false,
@@ -43,10 +43,10 @@ If you prefer to use the storage emulator, you can use the value ***UseDevelopme
 
 You will find three Orchestrators in the project:
 
-1. ProvisionUserWithSingleGroupOrchestrator: It will be started from the trigger function ***TriggerUserProvisioningChainingWorkflow*** listening from the **chainingqueue** on RabbitMQ.
+1. ProvisionUserWithSingleGroupOrchestrator: It will be started from the trigger function *[***TriggerUserProvisioningChainingWorkflow***](https://github.com/pregoli/SagaToServerless/blob/master/SagaToServerless/Triggers/NewUserProvisioningTrigger.cs) listening from the **chainingqueue** on RabbitMQ.
 
-2. ProvisionUserWithMultipleGroupsOrchestrator: It will be started from the trigger function ***TriggerUserProvisioningFanInFanOutWorkflow*** listening from the **faninfanoutqueue** on RabbitMQ.
+2. ProvisionUserWithMultipleGroupsOrchestrator: It will be started from the trigger function [***TriggerUserProvisioningFanInFanOutWorkflow***](https://github.com/pregoli/SagaToServerless/blob/master/SagaToServerless/Triggers/NewUserProvisioningTrigger.cs) listening from the **faninfanoutqueue** on RabbitMQ.
 
-3. ProvisionUserOrchestratorApproval: It will be started from the trigger function ***TriggerUserProvisioningApprovalWorkflow*** listening from the **approvalqueue** on RabbitMQ.
+3. ProvisionUserOrchestratorApproval: It will be started from the trigger function [***TriggerUserProvisioningApprovalWorkflow***](https://github.com/pregoli/SagaToServerless/blob/master/SagaToServerless/Triggers/NewUserProvisioningTrigger.cs) listening from the **approvalqueue** on RabbitMQ.
 
-You can find example of commands for durable functions to send from RabbitMQ in the project ***SagaToServerless.Common***, file [***utils.json***](https://github.com/pregoli/SagaToServerless/blob/master/SagaToServerless.Common/utils.json)
+You can find example of commands for durable functions to send from RabbitMQ in the project [**SagaToServerless.Common**](https://github.com/pregoli/SagaToServerless/tree/master/SagaToServerless.Common), file [***utils.json***](https://github.com/pregoli/SagaToServerless/blob/master/SagaToServerless.Common/utils.json)

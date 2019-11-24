@@ -43,7 +43,7 @@ If you prefer to use the storage emulator, you can use the value ***UseDevelopme
 
 You will find three Orchestrators in the project:
 
-1. ProvisionUserWithSingleGroupOrchestrator: It will be started from the trigger function *[***TriggerUserProvisioningChainingWorkflow***](https://github.com/pregoli/SagaToServerless/blob/master/SagaToServerless/Triggers/NewUserProvisioningTrigger.cs) listening from the **chainingqueue** on RabbitMQ.
+1. ProvisionUserWithSingleGroupOrchestrator: It will be started from the trigger function [***TriggerUserProvisioningChainingWorkflow***](https://github.com/pregoli/SagaToServerless/blob/master/SagaToServerless/Triggers/NewUserProvisioningTrigger.cs) listening from the **chainingqueue** on RabbitMQ.
 
 2. ProvisionUserWithMultipleGroupsOrchestrator: It will be started from the trigger function [***TriggerUserProvisioningFanInFanOutWorkflow***](https://github.com/pregoli/SagaToServerless/blob/master/SagaToServerless/Triggers/NewUserProvisioningTrigger.cs) listening from the **faninfanoutqueue** on RabbitMQ.
 

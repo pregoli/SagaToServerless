@@ -12,14 +12,16 @@ namespace SagaToServerless.Business
     {
         public Group()
         {
-            Users = new List<string>();
+            MemberIds = new List<string>();
         }
 
         public string GroupName { get; set; }
+
         public string CreatedBy { get; set; }
-        
+
         [BsonRepresentation(BsonType.String)]
         public GroupType GroupType { get; set; }
-        public List<string> Users { get; set; }
+
+        public List<string> MemberIds { get; set; }
     }
 }

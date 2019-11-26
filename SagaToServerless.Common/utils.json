@@ -11,7 +11,7 @@
       "lastName": "Cracco",
       "userName": "Carlo.Cracco@gmail.com"
     },
-    "groupId": "4a7d6b0b-d419-4e94-b5a6-147b61d2250d"
+    "groupId": "2ea75964-19af-4dc3-960f-82fd4c0df182"
   },
   //create and assign user to a ALL given groups  (ProvisionNewUserMultipleGroups)
   {
@@ -23,9 +23,9 @@
       "userName": "Iginio.Massari@gmail.com"
     },
     "groupIds": [
-      "4a7d6b0b-d419-4e94-b5a6-147b61d2250d",
-      "68be9a23-5881-4c72-9908-1747d6fffe4a",
-      "50787ae7-55b5-47fc-9dc0-091c3c0fb2e2"
+      "2ea75964-19af-4dc3-960f-82fd4c0df182",
+      "d6180584-be6b-464c-a65e-89d5c59ac574",
+      "7a4950bd-b053-4fe2-8124-98651c2cf08b"
     ]
   },
 
@@ -38,7 +38,7 @@
       "lastName": "Cannavacciuolo",
       "userName": "Antonino.Cannavacciuolo@gmail.com"
     },
-    "groupId": "4a7d6b0b-d419-4e94-b5a6-147b61d2250d"
+    "groupId": "2ea75964-19af-4dc3-960f-82fd4c0df182"
   },
 
   //*******SAGA
@@ -47,8 +47,8 @@
     "messageId": "edc90000-ff59-0003-c9d2-08d705f59244",
     "correlationId": "aacf038d-6d5d-487c-83f4-07c88269dbd0",
     "conversationId": "edc90000-ff59-0003-cac6-08d705f59244",
-    "sourceAddress": "rabbitmq://myrtle-toad.rmq.cloudamqp.com:5671/bus-RD0003FF59EDC9-WaWorkerHost-7zroyy89mryygqh4bdmx74s8nn?durable=false&autodelete=true",
-    "destinationAddress": "rabbitmq://myrtle-toad.rmq.cloudamqp.com:5671/Forward365.Common.Messages.Events.Management:PowershellSessionOpenedEvent",
+    "sourceAddress": "xxxxxxx",
+    "destinationAddress": "xxxxxxx",
     "messageType": [
       "urn:message:SagaToServerless.Common.Commands:ProvisionNewUserSingleGroup",
       "urn:message:SagaToServerless.Common.Commands:ICommand"
@@ -61,7 +61,7 @@
         "lastName": "Cracco",
         "userName": "Carlo.Cracco@gmail.com"
       },
-      "groupId": "4a7d6b0b-d419-4e94-b5a6-147b61d2250d"
+      "groupId": "2ea75964-19af-4dc3-960f-82fd4c0df182"
     },
     "headers": {
 
@@ -82,8 +82,8 @@
     "messageId": "edc90000-ff59-0003-c9d2-08d705f59244",
     "correlationId": "aacf038d-6d5d-487c-83f4-07c88269dbd0",
     "conversationId": "edc90000-ff59-0003-cac6-08d705f59244",
-    "sourceAddress": "rabbitmq://myrtle-toad.rmq.cloudamqp.com:5671/bus-RD0003FF59EDC9-WaWorkerHost-7zroyy89mryygqh4bdmx74s8nn?durable=false&autodelete=true",
-    "destinationAddress": "rabbitmq://myrtle-toad.rmq.cloudamqp.com:5671/Forward365.Common.Messages.Events.Management:PowershellSessionOpenedEvent",
+    "sourceAddress": "xxxxxxx",
+    "destinationAddress": "xxxxxxx",
     "messageType": [
       "urn:message:SagaToServerless.Common.Commands:ProvisionNewUserMultipleGroups",
       "urn:message:SagaToServerless.Common.Commands:ICommand"
@@ -97,9 +97,9 @@
         "userName": "Franco.Baresi@gmail.com"
       },
       "groupIds": [
-        "4a7d6b0b-d419-4e94-b5a6-147b61d2250d",
-        "68be9a23-5881-4c72-9908-1747d6fffe4a",
-        "50787ae7-55b5-47fc-9dc0-091c3c0fb2e2"
+        "2ea75964-19af-4dc3-960f-82fd4c0df182",
+        "d6180584-be6b-464c-a65e-89d5c59ac574",
+        "7a4950bd-b053-4fe2-8124-98651c2cf08b"
       ]
     },
     "headers": {
@@ -116,15 +116,15 @@
       "operatingSystemVersion": "Microsoft Windows NT 6.2.9200.0"
     }
   },
-  //Ask to the manager for a user creation APPROVAL then, if positive, create and assign user to a SPECIFIC group (ProvisionNewUserSingleGroup)
+  //Ask to the manager for a user creation APPROVAL then, if positive, create and assign user to a SPECIFIC group (ProvisionNewUserSingleGroupWithApproval)
   {
     "messageId": "edc90000-ff59-0003-c9d2-08d705f59244",
     "correlationId": "aacf038d-6d5d-487c-83f4-07c88269dbd0",
     "conversationId": "edc90000-ff59-0003-cac6-08d705f59244",
-    "sourceAddress": "rabbitmq://myrtle-toad.rmq.cloudamqp.com:5671/bus-RD0003FF59EDC9-WaWorkerHost-7zroyy89mryygqh4bdmx74s8nn?durable=false&autodelete=true",
-    "destinationAddress": "rabbitmq://myrtle-toad.rmq.cloudamqp.com:5671/Forward365.Common.Messages.Events.Management:PowershellSessionOpenedEvent",
+    "sourceAddress": "xxxxxxx",
+    "destinationAddress": "xxxxxxx",
     "messageType": [
-      "urn:message:SagaToServerless.Common.Commands:ProvisionNewUserSingleGroup",
+      "urn:message:SagaToServerless.Common.Commands:ProvisionNewUserSingleGroupWithApproval",
       "urn:message:SagaToServerless.Common.Commands:ICommand"
     ],
     "message": {
@@ -135,7 +135,7 @@
         "lastName": "Rossi",
         "userName": "Mario.Rossi@gmail.com"
       },
-      "groupId": "4a7d6b0b-d419-4e94-b5a6-147b61d2250d"
+      "groupId": "2ea75964-19af-4dc3-960f-82fd4c0df182"
     },
     "headers": {
 
@@ -156,15 +156,16 @@
     "messageId": "edc90000-ff59-0003-c9d2-08d705f59244",
     "correlationId": "a17fd3af-fe86-4059-bf18-611190071c2d",
     "conversationId": "edc90000-ff59-0003-cac6-08d705f59244",
-    "sourceAddress": "rabbitmq://myrtle-toad.rmq.cloudamqp.com:5671/bus-RD0003FF59EDC9-WaWorkerHost-7zroyy89mryygqh4bdmx74s8nn?durable=false&autodelete=true",
-    "destinationAddress": "rabbitmq://myrtle-toad.rmq.cloudamqp.com:5671/Forward365.Common.Messages.Events.Management:PowershellSessionOpenedEvent",
+    "sourceAddress": "xxxxxxx",
+    "destinationAddress": "xxxxxxx",
     "messageType": [
       "urn:message:SagaToServerless.Common.Commands:SendApproval",
       "urn:message:SagaToServerless.Common.Commands:ICommand"
     ],
     "message": {
-      "correlationId": "a17fd3af-fe86-4059-bf18-611190071c2d",
-      "approved": true
+      "correlationId": "97b182c1-c71e-4e03-a61c-140a8c83905c",
+      "approved": true,
+      "reason": ""
     },
     "headers": {
 

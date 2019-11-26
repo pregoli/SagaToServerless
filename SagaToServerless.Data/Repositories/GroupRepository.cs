@@ -16,7 +16,7 @@ namespace SagaToServerless.Data.Repositories
         public async Task<Guid> AssignUserAsync(Guid groupId, string userId)
         {
             var filter = Builders<Group>.Filter.Eq(x => x.Id, groupId);
-            var update = Builders<Group>.Update.AddToSet(u => u.Users, userId);
+            var update = Builders<Group>.Update.AddToSet(u => u.MemberIds, userId);
 
             var result =  await _collection.UpdateOneAsync(filter, update, new UpdateOptions { IsUpsert = true });
 
@@ -30,7 +30,7 @@ namespace SagaToServerless.Data.Repositories
             var update = builder
                 .Set(u => u.Id, group.Id)
                 .Set(u => u.GroupName, group.GroupName)
-                .Set(u => u.Users, group.Users);
+                .Set(u => u.MemberIds, group.MemberIds);
 
             await _collection.UpdateOneAsync(filter, update);
         }

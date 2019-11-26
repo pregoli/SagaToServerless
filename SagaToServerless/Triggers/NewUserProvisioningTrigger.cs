@@ -29,7 +29,7 @@ namespace SagaToServerless.Durable.Triggers
 
         [FunctionName(Constants.FunctionNames.Trigger.TriggerUserProvisioningFanInFanOutWorkflow)]
         public async Task TriggerUserProvisioningFanInFanOutWorkflow(
-        [RabbitMQTrigger("FanInFanOutQueue", ConnectionStringSetting = "rabbitMQ")] ProvisionNewUserMultipleGroups command,
+        [RabbitMQTrigger("faninfanoutqueue", ConnectionStringSetting = "rabbitMQ")] ProvisionNewUserMultipleGroups command,
         [DurableClient] IDurableClient starter,
         ILogger logger)
         {

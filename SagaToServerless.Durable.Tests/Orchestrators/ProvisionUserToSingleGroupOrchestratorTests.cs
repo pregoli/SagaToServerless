@@ -32,16 +32,19 @@ namespace SagaToServerless.Durable.Tests.Orchestrators
             );
 
         private Guid MockedNewUserId = Guid.NewGuid();
+        
         private WorkflowStepResult MockedCreateUserStepResult => new WorkflowStepResult(Constants.FunctionNames.Activity.CreateUser, MockedNewUserId, true);
         #endregion
 
         #region mocked create group request/response
         private Guid MockedGroupId = Guid.NewGuid();
-        private WorkflowStepResult MockedAssignUserToGroupStepResult => new WorkflowStepResult(Constants.FunctionNames.Activity.AssignUserToGroup, MockedGroupId, true);
+        private WorkflowStepResult MockedSuccessfullAssignUserToGroupStepResult => new WorkflowStepResult(Constants.FunctionNames.Activity.AssignUserToGroup, MockedGroupId, true);
+        private WorkflowStepResult MockedUnsuccessfullAssignUserToGroupStepResult => new WorkflowStepResult(Constants.FunctionNames.Activity.AssignUserToGroup, MockedGroupId, false, "booom");
+        private WorkflowStepResult MockedSuccessfullUnassignedGroupFromUserStepResult => new WorkflowStepResult(Constants.FunctionNames.Activity.UnassignGroupFromUser, MockedGroupId, false, "booom");
         #endregion
 
         [TestMethod]
-        public async Task Run_Chaining_Workflow()
+        public async Task For_A_Give_AssignUserToGroup_Successfully_Two_Output_Items_Will_Be_Returned()
         {
             var contextMock = new Mock<IDurableOrchestrationContext>();
             contextMock.Setup(x => x.GetInput<ProvisionNewUserSingleGroup>()).Returns(new ProvisionNewUserSingleGroup
@@ -56,7 +59,7 @@ namespace SagaToServerless.Durable.Tests.Orchestrators
                 .Setup(context => context.CallActivityWithRetryAsync<WorkflowStepResult>(
                     Constants.FunctionNames.Activity.CreateUser,
                     It.IsAny<RetryOptions>(),
-                    It.IsAny<(string OperatorEmail, UserModel user)>()))
+                    It.IsAny<(string OperatorEmail, UserModel user, List<Guid> GroupIds)>()))
                 .Returns(Task.FromResult(MockedCreateUserStepResult));
 
             contextMock
@@ -64,7 +67,7 @@ namespace SagaToServerless.Durable.Tests.Orchestrators
                     Constants.FunctionNames.Activity.AssignUserToGroup,
                     It.IsAny<RetryOptions>(),
                     It.IsAny<AssignUserToGroupModel>()))
-                .Returns(Task.FromResult(MockedAssignUserToGroupStepResult));
+                .Returns(Task.FromResult(MockedSuccessfullAssignUserToGroupStepResult));
 
             var orchestrator = new ProvisionUserWithSingleGroupOrchestrator();
 
@@ -75,6 +78,50 @@ namespace SagaToServerless.Durable.Tests.Orchestrators
             Assert.AreEqual(2, result.Count);
             Assert.AreEqual(MockedNewUserId, result[0].OutputId);
             Assert.AreEqual(MockedGroupId, result[1].OutputId);
+        }
+
+        [TestMethod]
+        public async Task For_A_Give_AssignUserToGroup_Successfully_Three_Output_Items_Will_Be_Returned()
+        {
+            var contextMock = new Mock<IDurableOrchestrationContext>();
+            contextMock.Setup(x => x.GetInput<ProvisionNewUserSingleGroup>()).Returns(new ProvisionNewUserSingleGroup
+            {
+                CorrelationId = Guid.NewGuid(),
+                GroupId = MockedGroupId,
+                User = MockedProvisionedUserModel.User,
+                OperatorEmail = MockedProvisionedUserModel.OperatorEmail
+            });
+
+            contextMock
+                .Setup(context => context.CallActivityWithRetryAsync<WorkflowStepResult>(
+                    Constants.FunctionNames.Activity.CreateUser,
+                    It.IsAny<RetryOptions>(),
+                    It.IsAny<(string OperatorEmail, UserModel user, List<Guid> GroupIds)>()))
+                .Returns(Task.FromResult(MockedCreateUserStepResult));
+
+            contextMock
+                .Setup(context => context.CallActivityWithRetryAsync<WorkflowStepResult>(
+                    Constants.FunctionNames.Activity.AssignUserToGroup,
+                    It.IsAny<RetryOptions>(),
+                    It.IsAny<AssignUserToGroupModel>()))
+                .Returns(Task.FromResult(MockedUnsuccessfullAssignUserToGroupStepResult));
+
+            contextMock
+                .Setup(context => context.CallActivityWithRetryAsync<WorkflowStepResult>(
+                    Constants.FunctionNames.Activity.UnassignGroupFromUser,
+                    It.IsAny<RetryOptions>(),
+                    It.IsAny<(Guid UserId, Guid GroupId)>()))
+                .Returns(Task.FromResult(MockedSuccessfullUnassignedGroupFromUserStepResult));
+
+            var orchestrator = new ProvisionUserWithSingleGroupOrchestrator();
+
+            var result = await orchestrator.StartProvisionUserWithSingleGroupOrchestrator(
+                contextMock.Object,
+                _logger);
+
+            Assert.AreEqual(3, result.Count);
+            Assert.AreEqual(MockedNewUserId, result[0].OutputId);
+            Assert.IsFalse(result[1].Successfull);
         }
     }
 }

@@ -9,13 +9,13 @@ namespace SagaToServerless.Common.Events
     {
         public UserAssignedToGroupSuccessfully(
             Guid correlationId,
-            Guid outputId)
+            Guid assignedGroupId)
         {
             CorrelationId = correlationId;
-            OutputId = outputId;
+            AssignedGroupId = assignedGroupId;
         }
 
         public Guid CorrelationId { get; set; }
-        public Guid OutputId { get; set; }
+        public Guid AssignedGroupId { get; set; }
     }
 }

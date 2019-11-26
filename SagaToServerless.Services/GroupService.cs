@@ -22,7 +22,7 @@ namespace SagaToServerless.Services
             {
                 GroupName = groupModel.GroupName,
                 CreatedBy = createdBy,
-                Users = groupModel.Users
+                MemberIds = groupModel.Users
             });
 
             return group.Id;
@@ -30,12 +30,8 @@ namespace SagaToServerless.Services
 
         public async Task<Guid> AssignUserAsync(Guid groupId, string userId)
         {
+            //throw new Exception("BOOOOM!");
             return await _groupRepository.AssignUserAsync(groupId, userId);
-        }
-
-        public async Task<bool> RemoveAsync(Guid id)
-        {
-            return await _groupRepository.RemoveAsync(id);
         }
     }
 }

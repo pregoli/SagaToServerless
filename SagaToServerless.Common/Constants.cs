@@ -34,6 +34,7 @@ namespace SagaToServerless.Common
             public static class Activity
             {
                 public const string CreateUser = "CreateUser_A";
+                public const string UnassignGroupFromUser = "UnassignGroupFromUser_A";
                 public const string AssignUserToGroup = "AssignUserToGroup_A";
                 public const string AskUserCreationApproval = "AskUserCreationApproval_A";
                 public const string SendEmail = "SendEmail_A";

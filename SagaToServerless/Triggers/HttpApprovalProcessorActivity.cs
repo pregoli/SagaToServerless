@@ -32,7 +32,7 @@ namespace SagaToServerless.Durable.Triggers
 
                 await orchestrationClient.RaiseEventAsync(instanceId, "ReceiveApprovalResponse", isApproved);
 
-                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("APPROVED!") };
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(isApproved ? "APPROVED!" : "REJECTED!") };
             }
             else
             {

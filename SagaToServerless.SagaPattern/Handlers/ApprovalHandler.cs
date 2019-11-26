@@ -13,7 +13,7 @@ namespace SagaToServerless.SagaPattern.Handlers
         public async Task Consume(ConsumeContext<SendApproval> context)
         {
             var message = context.Message;
-            await context.Publish(new ApprovalReceived(message.CorrelationId, message.Approved));
+            await context.Publish(new ApprovalReceived(message.CorrelationId, message.Approved, message.Reason));
         }
 
         public async Task Consume(ConsumeContext<AskApproval> context)
@@ -23,7 +23,7 @@ namespace SagaToServerless.SagaPattern.Handlers
                 correlationId: message.CorrelationId,
                 from: string.Empty,
                 to: message.OperatorEmail,
-                subject: $"Provisioning User {message.User.FirstName} {message.User.LastName} with Group {message.GroupId}",
+                subject: $"ApprovalId [{message.CorrelationId}] - Provisioning User {message.User.FirstName} {message.User.LastName} with Group {message.GroupId}",
                 htmlBody: ApprovalMailBody(message.CorrelationId)));
         }
 

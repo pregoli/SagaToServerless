@@ -10,11 +10,12 @@ using System.Threading.Tasks;
 namespace SagaToServerless.SagaPattern.Handlers
 {
     public class ProvisionUserHandler :
-        IConsumer<NewUserSingleGroupProvisioningSuccessfully>,
-        IConsumer<NewUserSingleGroupProvisioningUnsuccessfully>,
-        IConsumer<NewUserMultipleGroupsProvisioningCompleted>
+        IConsumer<NewUserSingleGroupProvisioningCompleted>,
+        IConsumer<NewUserProvisioningWithApprovalCompleted>,
+        IConsumer<NewUserMultipleGroupsProvisioningCompleted>,
+        IConsumer<NewUserSingleGroupCreationRejected>
     {
-        public async Task Consume(ConsumeContext<NewUserSingleGroupProvisioningSuccessfully> context)
+        public async Task Consume(ConsumeContext<NewUserSingleGroupProvisioningCompleted> context)
         {
             try
             {
@@ -23,8 +24,8 @@ namespace SagaToServerless.SagaPattern.Handlers
                             correlationId: message.CorrelationId,
                             from: string.Empty,
                             to: message.OperatorEmail,
-                            subject: message.User.ToMailSubject(new List<Guid> { message.AssignToGroupId }),
-                            htmlBody: message.User.ToMailBody(new List<Guid> { message.AssignedToGroupId })));
+                            subject:  message.User.ToMailSubject(new List<Guid> { message.AssignToGroupId }),
+                            htmlBody: message.User.ToMailBody(message.UserCreated, new List <Guid> { message.AssignedToGroupId }, message.Reason)));
             }
             catch (Exception ex)
             {
@@ -32,7 +33,7 @@ namespace SagaToServerless.SagaPattern.Handlers
             }
         }
 
-        public async Task Consume(ConsumeContext<NewUserSingleGroupProvisioningUnsuccessfully> context)
+        public async Task Consume(ConsumeContext<NewUserProvisioningWithApprovalCompleted> context)
         {
             try
             {
@@ -42,7 +43,25 @@ namespace SagaToServerless.SagaPattern.Handlers
                             from: string.Empty,
                             to: message.OperatorEmail,
                             subject: message.User.ToMailSubject(new List<Guid> { message.AssignToGroupId }),
-                            htmlBody: message.User.ToMailBody(new List<Guid> { message.AssignedToGroupId }, message.Reason)));
+                            htmlBody: !message.Approved ? message.User.ToApprovalRejectedMailBody(message.Reason) : message.User.ToMailBody(message.UserCreated, new List<Guid> { message.AssignedToGroupId }, message.Reason)));
+            }
+            catch (Exception ex)
+            {
+                //log something maybe...
+            }
+        }
+
+        public async Task Consume(ConsumeContext<NewUserSingleGroupCreationRejected> context)
+        {
+            try
+            {
+                var message = context.Message;
+                await context.Publish(new NotifyByEmail(
+                            correlationId: message.CorrelationId,
+                            from: string.Empty,
+                            to: message.OperatorEmail,
+                            subject: $"Provision user {message.User.UserName}",
+                            htmlBody: $"<string style='color:red'>REJECTED</string>"));
             }
             catch (Exception ex)
             {
@@ -60,7 +79,7 @@ namespace SagaToServerless.SagaPattern.Handlers
                             from: string.Empty,
                             to: message.OperatorEmail,
                             subject: message.User.ToMailSubject(message.AssignToGroupIds),
-                            htmlBody: message.User.ToMailBody(message.AssignedToGroupIds, message.Reason)));
+                            htmlBody: message.User.ToMailBody(message.UserCreated, message.AssignedToGroupIds, message.Reason)));
             }
             catch (Exception ex)
             {

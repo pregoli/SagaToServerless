@@ -23,6 +23,7 @@ namespace SagaToServerless.SagaPattern.Handlers
 
         public async Task Consume(ConsumeContext<AssignUserToGroup> context)
         {
+            await Task.Delay(TimeSpan.FromSeconds(5));
             var message = context.Message;
 
             try
@@ -32,13 +33,16 @@ namespace SagaToServerless.SagaPattern.Handlers
             }
             catch (Exception ex)
             {
-                await context.Publish(new UserAssignedToGroupUnsuccessfully(message.CorrelationId, message.GroupId, ex.Message));
+                await context.Publish(new UserAssignedToGroupUnsuccessfully(
+                    correlationId: message.CorrelationId, 
+                    groupId: message.GroupId, 
+                    reason: $"Something went wrong adding the user {message.UserId} to group {message.GroupId} members - Error: {ex.Message}"));
             }
         }
 
         public async Task Consume(ConsumeContext<AssignUserToGroups> context)
         {
-            var result = new List<Guid>();
+            var assignedGroupIds = new List<Guid>();
 
             var message = context.Message;
 
@@ -48,13 +52,19 @@ namespace SagaToServerless.SagaPattern.Handlers
                 for (int i = 0; i < message.GroupIds.Count; i++)
                     tasks.Add(_groupService.AssignUserAsync(message.GroupIds[i], message.UserId.ToString()));
 
-                result = (await Task.WhenAll(tasks)).ToList();
+                assignedGroupIds = (await Task.WhenAll(tasks)).ToList();
 
-                await context.Publish(new UserAssignedToGroupsCompleted(message.CorrelationId, result));
+                await context.Publish(new UserAssignedToGroupsCompleted(
+                    correlationId: message.CorrelationId,
+                    assignedGroupIds: assignedGroupIds));
             }
             catch (Exception ex)
             {
-                await context.Publish(new UserAssignedToGroupsCompleted(message.CorrelationId, result, false, ex.Message));
+                await context.Publish(new UserAssignedToGroupsCompleted(
+                    correlationId: message.CorrelationId,
+                    assignedGroupIds: assignedGroupIds, 
+                    successfull: false,
+                    reason: $"Something went wrong adding the user {message.UserId} to groups {string.Join(',', message.GroupIds)} members - Error: {ex.Message}"));
             }
         }
     }

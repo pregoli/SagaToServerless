@@ -13,13 +13,15 @@ namespace SagaToServerless.Common.Events
             List<Guid> assignToGroupIds, 
             List<Guid> assignedToGroupIds, 
             UserModel user, 
-            string operatorEmail, 
+            string operatorEmail,
+            bool userCreated,
             string reason)
         {
             CorrelationId = correlationId;
             AssignToGroupIds = assignToGroupIds;
             AssignedToGroupIds = assignedToGroupIds;
             User = user;
+            UserCreated = userCreated;
             OperatorEmail = operatorEmail;
             Reason = reason;
         }
@@ -28,6 +30,7 @@ namespace SagaToServerless.Common.Events
         public List<Guid> AssignToGroupIds { get; set; }
         public List<Guid> AssignedToGroupIds { get; set; }
         public UserModel User { get; set; }
+        public bool UserCreated { get; set; }
         public string OperatorEmail { get; set; }
         public string Reason { get; set; }
     }

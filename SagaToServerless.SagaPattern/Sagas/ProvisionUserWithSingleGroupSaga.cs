@@ -11,6 +11,7 @@ using SagaToServerless.SagaPattern.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Text;
 
 namespace SagaToServerless.SagaPattern.Sagas
@@ -32,7 +33,8 @@ namespace SagaToServerless.SagaPattern.Sagas
             Event(() => AssignUserToGroup, x => x.CorrelateBy((s, m) => s.CorrelationId == m.Message.CorrelationId));
             Event(() => UserAssignedToGroupSuccessfully, x => x.CorrelateBy((s, m) => s.CorrelationId == m.Message.CorrelationId));
             Event(() => UserAssignedToGroupUnsuccessfully, x => x.CorrelateBy((s, m) => s.CorrelationId == m.Message.CorrelationId));
-            //Event(() => NotifyByEmail, x => x.CorrelateBy((s, m) => s.CorrelationId == m.Message.CorrelationId));
+            Event(() => GroupsUnassignedFromUserSuccessfully, x => x.CorrelateBy((s, m) => s.CorrelationId == m.Message.CorrelationId));
+            Event(() => GroupsUnassignedFromUserUnsuccessfully, x => x.CorrelateBy((s, m) => s.CorrelationId == m.Message.CorrelationId));
 
             #endregion
 
@@ -48,14 +50,21 @@ namespace SagaToServerless.SagaPattern.Sagas
                         x.Instance.GroupId = x.Data.GroupId;
                     })
                     .Send((instance, data) => new Uri(Constants.SagaPattern.QueueUris.UsersHandler),
-                        x => new CreateUser(x.Instance.CorrelationId, x.Instance.User, x.Instance.OperatorEmail))
+                        x => new CreateUser(
+                            x.Instance.CorrelationId, 
+                            x.Instance.User, 
+                            new List<Guid> { x.Instance.GroupId }, 
+                            x.Instance.OperatorEmail))
                     .TransitionTo(CreatingUser));
 
             During(CreatingUser,
                 When(UserCreatedSuccessfully)
                     .Then(x => x.Instance.NewUserId = x.Data.UserId)
                     .Send((instance, data) => new Uri(Constants.SagaPattern.QueueUris.GroupsHandler),
-                       x => new AssignUserToGroup(x.Instance.CorrelationId, x.Instance.GroupId, x.Instance.NewUserId))
+                       x => new AssignUserToGroup(
+                           x.Instance.CorrelationId, 
+                           x.Instance.GroupId, 
+                           x.Instance.NewUserId))
                     .TransitionTo(AssigningUserToGroup),
                 When(UserCreatedUnsuccessfully)
                     .Then(x => 
@@ -63,30 +72,62 @@ namespace SagaToServerless.SagaPattern.Sagas
                         x.Instance.ErrorMessage = x.Data.Reason;
                         x.Instance.EndDate = DateTime.UtcNow;
                     })
+                    .Publish(x => new NewUserSingleGroupProvisioningCompleted(
+                        x.Instance.CorrelationId,
+                        x.Instance.GroupId,
+                        x.Instance.AssignedGroupId,
+                        x.Instance.User,
+                        x.Instance.OperatorEmail,
+                        false,
+                        x.Instance.ErrorMessage))
                     .TransitionTo(Failed));
 
             During(AssigningUserToGroup,
                 When(UserAssignedToGroupSuccessfully)
-                    .Then(x => x.Instance.EndDate = DateTime.UtcNow)
-                    .Publish(x => new NewUserSingleGroupProvisioningSuccessfully(
+                    .Then(x =>
+                    {
+                        x.Instance.AssignedGroupId = x.Data.AssignedGroupId;
+                        x.Instance.EndDate = DateTime.UtcNow;
+                    })
+                    .Publish(x => new NewUserSingleGroupProvisioningCompleted(
                         x.Instance.CorrelationId,
                         x.Instance.GroupId,
-                        x.Data.OutputId,
+                        x.Instance.AssignedGroupId,
                         x.Instance.User,
-                        x.Instance.OperatorEmail))
+                        x.Instance.OperatorEmail,
+                        true))
                     .Finalize(),
                 When(UserAssignedToGroupUnsuccessfully)
+                    .Then(x => x.Instance.ErrorMessage += x.Data.Reason )
+                    .Send((instance, data) => new Uri(Constants.SagaPattern.QueueUris.UsersHandler),
+                        x => new UnassignGroupsFromUser(x.Instance.CorrelationId, x.Instance.NewUserId, new List<Guid> { x.Instance.GroupId }))
+                    .TransitionTo(UnassigningGroupFromUser));
+
+            During(UnassigningGroupFromUser,
+                When(GroupsUnassignedFromUserSuccessfully)
+                    .Then(x => x.Instance.EndDate = DateTime.UtcNow)
+                    .Publish(x => new NewUserSingleGroupProvisioningCompleted(
+                        x.Instance.CorrelationId,
+                        x.Instance.GroupId,
+                        x.Instance.AssignedGroupId,
+                        x.Instance.User,
+                        x.Instance.OperatorEmail,
+                        true,
+                        x.Instance.ErrorMessage))
+                    .TransitionTo(PartiallyCompleted),
+                When(GroupsUnassignedFromUserUnsuccessfully)
                     .Then(x =>
                     {
                         x.Instance.ErrorMessage += x.Data.Reason;
                         x.Instance.EndDate = DateTime.UtcNow;
                     })
-                    .Publish(x => new NewUserSingleGroupProvisioningUnsuccessfully(
+                    .Publish(x => new NewUserSingleGroupProvisioningCompleted(
                         x.Instance.CorrelationId,
                         x.Instance.GroupId,
-                        x.Data.OutputId,
+                        x.Instance.AssignedGroupId,
                         x.Instance.User,
                         x.Instance.OperatorEmail,
+                        true,
                         x.Instance.ErrorMessage))
                     .TransitionTo(PartiallyCompleted));
         }
@@ -100,7 +141,8 @@ namespace SagaToServerless.SagaPattern.Sagas
         public Event<AssignUserToGroup> AssignUserToGroup { get; private set; }
         public Event<UserAssignedToGroupSuccessfully> UserAssignedToGroupSuccessfully { get; private set; }
         public Event<UserAssignedToGroupUnsuccessfully> UserAssignedToGroupUnsuccessfully { get; private set; }
-        //public Event<NotifyByEmail> NotifyByEmail { get; private set; }
+        public Event<GroupsUnassignedFromUserSuccessfully> GroupsUnassignedFromUserSuccessfully { get; private set; }
+        public Event<GroupsUnassignedFromUserUnsuccessfully> GroupsUnassignedFromUserUnsuccessfully { get; private set; }
 
         #endregion
 
@@ -108,6 +150,7 @@ namespace SagaToServerless.SagaPattern.Sagas
 
         public State CreatingUser { get; private set; }
         public State AssigningUserToGroup { get; private set; }
+        public State UnassigningGroupFromUser { get; private set; }
         public State PartiallyCompleted { get; private set; }
         public State Failed { get; private set; }
 
@@ -126,8 +169,12 @@ namespace SagaToServerless.SagaPattern.Sagas
         public DateTime EndDate { get; set; }
         public UserModel User { get; set; }
         public string OperatorEmail { get; set; }
+        [BsonRepresentation(BsonType.String)]
         public Guid NewUserId { get; set; }
+        [BsonRepresentation(BsonType.String)]
         public Guid GroupId { get; set; }
+        [BsonRepresentation(BsonType.String)]
+        public Guid AssignedGroupId { get; set; }
         public string ErrorMessage { get; set; }
     }
 }

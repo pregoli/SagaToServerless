@@ -1,24 +1,23 @@
 ﻿using SagaToServerless.Common.Commands;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SagaToServerless.Common.Events
 {
-    public class UserAssignedToGroupUnsuccessfully : ICommand
+    public class GroupsUnassignedFromUserUnsuccessfully : ICommand
     {
-        public UserAssignedToGroupUnsuccessfully(
+        public GroupsUnassignedFromUserUnsuccessfully(
             Guid correlationId,
-            Guid groupId,
+            List<Guid> unassignedGroupIds,
             string reason)
         {
             CorrelationId = correlationId;
-            GroupId = groupId;
+            UnassignedGroupIds = unassignedGroupIds;
             Reason = reason;
         }
 
         public Guid CorrelationId { get; set; }
-        public Guid GroupId { get; set; }
+        public List<Guid> UnassignedGroupIds { get; set; }
         public string Reason { get; set; }
     }
 }

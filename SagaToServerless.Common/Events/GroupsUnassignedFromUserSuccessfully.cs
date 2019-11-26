@@ -5,20 +5,17 @@ using System.Text;
 
 namespace SagaToServerless.Common.Events
 {
-    public class UserAssignedToGroupUnsuccessfully : ICommand
+    public class GroupsUnassignedFromUserSuccessfully : ICommand
     {
-        public UserAssignedToGroupUnsuccessfully(
+        public GroupsUnassignedFromUserSuccessfully(
             Guid correlationId,
-            Guid groupId,
-            string reason)
+            List<Guid> groupIds)
         {
             CorrelationId = correlationId;
-            GroupId = groupId;
-            Reason = reason;
+            UnassignedGroupIds = groupIds;
         }
 
         public Guid CorrelationId { get; set; }
-        public Guid GroupId { get; set; }
-        public string Reason { get; set; }
+        public List<Guid> UnassignedGroupIds { get; set; }
     }
 }

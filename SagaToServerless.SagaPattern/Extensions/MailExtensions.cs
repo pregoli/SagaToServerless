@@ -13,10 +13,19 @@ namespace SagaToServerless.SagaPattern.Extensions
             return $"Provisioning User {user.FirstName} {user.LastName} with Groups {string.Join(',', groupIds)}";
         }
 
-        public static string ToMailBody(this UserModel user, List<Guid> outputIds, string error = "")
+        public static string ToMailBody(this UserModel user, bool userCreated, List<Guid> outputIds, string error = "")
         {
             var mailBody = new StringBuilder();
-            mailBody.Append($"UserCreated: <strong style='color:green;'>{user.FirstName} {user.LastName}</strong></br>");
+
+            if (!userCreated)
+            {
+                mailBody.Append($"User: <strong style='color:red;'>{user.FirstName} {user.LastName}</strong>");
+                mailBody.Append($" cannot be created for the following reason: </br>");
+                mailBody.Append($"<strong style='color:red;'>{error}</strong>");
+                return mailBody.ToString();
+            }
+
+            mailBody.Append($"User: <strong style='color:green;'>{user.FirstName} {user.LastName}</strong> created Successfully.</br>");
 
             var validOutputIds = outputIds.Where(x => x != Guid.Empty);
             if (validOutputIds.Any())
@@ -34,11 +43,11 @@ namespace SagaToServerless.SagaPattern.Extensions
             return mailBody.ToString();
         }
 
-        public static string ToApprovalRejectedMailBody(this UserModel user)
+        public static string ToApprovalRejectedMailBody(this UserModel user, string reason)
         {
             var mailBody = new StringBuilder();
             mailBody.Append($"User: <strong style='color:red;'>{user.FirstName} {user.LastName}</strong> will be not created.</br>");
-            mailBody.Append($"<strong style='color:red;'>REQUEST REJECTED</strong>");
+            mailBody.Append($"<strong style='color:red;'>REQUEST REJECTED - {reason}</strong>");
             return mailBody.ToString();
         }
     }

@@ -26,11 +26,17 @@ namespace SagaToServerless.Durable.Activities.Groups
             try
             {
                 var groupId = await _groupService.AssignUserAsync(model.GroupId, model.UserId.ToString());
-                return new WorkflowStepResult(nameof(AssignUserToGroup), groupId);
+                return new WorkflowStepResult(
+                    actionName: nameof(AssignUserToGroup),
+                    outputId: groupId);
             }
             catch (Exception ex)
             {
-                return new WorkflowStepResult(nameof(AssignUserToGroup), Guid.Empty, false, ex.Message);
+                return new WorkflowStepResult(
+                    actionName: nameof(AssignUserToGroup), 
+                    outputId: model.GroupId, 
+                    successfull: false, 
+                    reason: $"Something went wrong adding the user {model.UserId} to group {model.GroupId} members - Error: {ex.Message}");
             }
         }
     }

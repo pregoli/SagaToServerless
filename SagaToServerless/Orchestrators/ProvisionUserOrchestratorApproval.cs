@@ -25,61 +25,50 @@ namespace SagaToServerless.Durable.Orchestrators
             var outputs = new List<WorkflowStepResult>();
 
             if (!context.IsReplaying)
-                logger.LogInformation($"Started User provisioning approval workflow with InstanceId: {input.CorrelationId}");
+                logger.LogInformation($"Executing User provisioning approval workflow with InstanceId: {input.CorrelationId}");
 
-            var retryOptions = new RetryOptions(
-                firstRetryInterval: TimeSpan.FromMinutes(5),
-                maxNumberOfAttempts: 3);
+            var retryOptions = new RetryOptions(TimeSpan.FromMinutes(5), 3);
 
             await context.CallActivityWithRetryAsync(Constants.FunctionNames.Activity.AskUserCreationApproval, retryOptions, input);
 
-            using (var timeoutCts = new CancellationTokenSource())
-            {
-                var expiration = context.CurrentUtcDateTime.AddMinutes(5);
-                var timeoutTask = context.CreateTimer(expiration, timeoutCts.Token);
-
-                //This external event will be triggered on mail click hopefully... :)
-                var approvalResponse = context.WaitForExternalEvent<bool>("ReceiveApprovalResponse");
-                var winner = await Task.WhenAny(approvalResponse, timeoutTask);
-
-                if (winner == approvalResponse)
+                var approvalResult = await context.WaitForExternalEvent<bool>("ReceiveApprovalResponse");
+                if (approvalResult)
                 {
-                    if (approvalResponse.Result)
+                    outputs.Add(new WorkflowStepResult(Constants.FunctionNames.Activity.AskUserCreationApproval, Guid.Empty, approvalResult, "approved"));
+
+                    var createUserResult = await context.CallActivityWithRetryAsync<WorkflowStepResult>(Constants.FunctionNames.Activity.CreateUser, retryOptions, (input.OperatorEmail, input.User, new List<Guid> { input.GroupId }));
+                    outputs.Add(createUserResult);
+
+                    if (createUserResult.Successfull)
                     {
-                        var createdUserResult = await context.CallActivityWithRetryAsync<WorkflowStepResult>(Constants.FunctionNames.Activity.CreateUser, retryOptions, (input.OperatorEmail, input.User));
-                        outputs.Add(createdUserResult);
-
-                        if (outputs[0].Successfull)
-                            outputs.Add(await context.CallActivityWithRetryAsync<WorkflowStepResult>(Constants.FunctionNames.Activity.AssignUserToGroup, retryOptions, new AssignUserToGroupModel(input.GroupId, createdUserResult.OutputId)));
-                    }
-
-                    await context.CallActivityWithRetryAsync<WorkflowStepResult>(Constants.FunctionNames.Activity.SendEmail, retryOptions, new MailItemModel(
-                                from: string.Empty,
-                                to: input.OperatorEmail,
-                                subject: $"Provisioning User {input.User.FirstName} {input.User.FirstName} with Group {input.GroupId}",
-                                htmlBody: outputs.ToProvisioningUserMailBody()));
-
-                    return outputs;
-                }
-
-                if (!timeoutTask.IsCompleted)
-                    timeoutCts.Cancel();
-                else
-                {
-                    context.SetOutput("Expired");
-
-                    await context.CallActivityWithRetryAsync(
-                            Constants.FunctionNames.Activity.SendEmail,
+                        var assignUserToGroupResult = await context.CallActivityWithRetryAsync<WorkflowStepResult>(
+                            Constants.FunctionNames.Activity.AssignUserToGroup,
                             retryOptions,
-                            new MailItemModel(
-                                from: string.Empty,
-                                to: input.OperatorEmail,
-                                subject: $"Provisioning User {input.User.FirstName} {input.User.FirstName} with Group {input.GroupId}",
-                                htmlBody: outputs.ToProvisioningUserMailBody()));
+                            new AssignUserToGroupModel(input.GroupId, createUserResult.OutputId));
+
+                        outputs.Add(assignUserToGroupResult);
+
+                        if (!assignUserToGroupResult.Successfull)
+                        {
+                            var unassignGroupFromUserResult = await context.CallActivityWithRetryAsync<WorkflowStepResult>(
+                                Constants.FunctionNames.Activity.UnassignGroupFromUser,
+                                retryOptions,
+                                (createUserResult.OutputId, assignUserToGroupResult.OutputId.ToString()));
+
+                            outputs.Add(unassignGroupFromUserResult);
+                        }
+                    }
                 }
+                else
+                    outputs.Add(new WorkflowStepResult(Constants.FunctionNames.Activity.AskUserCreationApproval, Guid.Empty, approvalResult, "rejected"));
+
+                await context.CallActivityWithRetryAsync<WorkflowStepResult>(Constants.FunctionNames.Activity.SendEmail, retryOptions, new MailItemModel(
+                            from: string.Empty,
+                            to: input.OperatorEmail,
+                            subject: $"Provisioning User {input.User.FirstName} {input.User.FirstName} with Group {input.GroupId}",
+                            htmlBody: outputs.ToProvisioningUserMailBodyWithApproval(input.User, approvalResult)));
 
                 return outputs;
-            }
         }
     }
 }

@@ -26,7 +26,11 @@ namespace SagaToServerless.Durable.Activities.Miscellaneous
             try
             {
                 await _sendGridService.SendEmail(
-                    string.Empty, model.Subject, model.To, model.PlainBody, model.HtmlBody);
+                    from: string.Empty, 
+                    subject: model.Subject, 
+                    to: model.To, 
+                    plainContent: model.PlainBody, 
+                    htmlContent: model.HtmlBody);
             }
             catch (Exception ex)
             {

@@ -2,7 +2,22 @@
   "version": "2.0",
   "extensions": {
     "durableTask": {
-      "HubName": "TaskHubDemo"
+      "HubName": "TaskHubDemo",
+      "storageProvider": {
+        "controlQueueBatchSize": 32,
+        "partitionCount": 4,
+        "controlQueueVisibilityTimeout": "00:01:00",
+        "workItemQueueVisibilityTimeout": "00:01:00",
+        "maxQueuePollingInterval": "00:00:30",
+        "connectionStringName": "AzureWebJobsStorage",
+        "trackingStoreNamePrefix": "DurableTask"
+      }
+    }
+  },
+  "logging": {
+    "fileLoggingMode": "debugOnly",
+    "console": {
+      "isEnabled": "true"
     }
   }
 }

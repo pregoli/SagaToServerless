@@ -9,7 +9,6 @@ namespace SagaToServerless.Services
     public interface IGroupService
     {
         Task<Guid> SaveAsync(string createdBy, GroupModel groupModel);
-        Task<bool> RemoveAsync(Guid id);
         Task<Guid> AssignUserAsync(Guid groupId, string userId);
     }
 }

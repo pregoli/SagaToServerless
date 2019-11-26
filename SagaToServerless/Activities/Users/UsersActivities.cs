@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using SagaToServerless.Common.Commands;
 using SagaToServerless.Durable.Dto;
+using SagaToServerless.Durable.Extensions;
 
 namespace SagaToServerless.Durable.Activities.Users
 {
@@ -26,25 +27,51 @@ namespace SagaToServerless.Durable.Activities.Users
         }
 
         [FunctionName(Constants.FunctionNames.Activity.CreateUser)]
-        public async Task<WorkflowStepResult> CreateUser([ActivityTrigger] (string OperatorEmail, UserModel User) request, ILogger logger)
+        public async Task<WorkflowStepResult> CreateUser([ActivityTrigger] (string OperatorEmail, UserModel User, List<Guid> GroupIds) input, ILogger logger)
         {
             try
             {
-                var newUserId = await _userService.SaveAsync(request.OperatorEmail, request.User);
-                return new WorkflowStepResult(nameof(CreateUser), newUserId);
+                var userId = await _userService.SaveAsync(input.OperatorEmail, input.User, input.GroupIds);
+                return new WorkflowStepResult(
+                    actionName: nameof(CreateUser),
+                    outputId: userId);
             }
             catch (Exception ex)
             {
-                return new WorkflowStepResult(nameof(CreateUser), Guid.Empty, false, ex.Message);
+                return new WorkflowStepResult(
+                    actionName: nameof(CreateUser),
+                    outputId: Guid.Empty,
+                    successfull: false, 
+                    reason: $"Something went wrong creating user {input.User.UserName} - Error: {ex.Message}");
+            }
+        }
+
+        [FunctionName(Constants.FunctionNames.Activity.UnassignGroupFromUser)]
+        public async Task<WorkflowStepResult> UnassignGroupFromUser([ActivityTrigger] (Guid UserId, Guid GroupId) input, ILogger logger)
+        {
+            try
+            {
+                await _userService.UnassignGroupsFromUser(input.UserId, new List<Guid> { input.GroupId });
+                return new WorkflowStepResult(
+                    actionName: nameof(UnassignGroupFromUser),
+                    outputId: input.GroupId);
+            }
+            catch (Exception ex)
+            {
+                return new WorkflowStepResult(
+                    actionName: nameof(UnassignGroupFromUser),
+                    outputId: input.GroupId, 
+                    successfull: false,
+                    reason: $"Something went wrong unassigning member {input.UserId} from group {input.GroupId} - Error: {ex.Message}");
             }
         }
 
         [FunctionName(Constants.FunctionNames.Activity.AskUserCreationApproval)]
-        public async Task AskUserCreationApproval([ActivityTrigger] ProvisionNewUserSingleGroup model, ILogger logger)
+        public async Task AskUserCreationApproval([ActivityTrigger] ProvisionNewUserSingleGroup input, ILogger logger)
         {
             try
             {
-                await _sendGridService.SendEmail("noreply@coreview.com", "create user request", model.OperatorEmail, $"Create user {model.User.FirstName} {model.User.LastName}", ApprovalMailBody(model.CorrelationId));
+                await _sendGridService.SendEmail("noreply@coreview.com", "create user request", input.OperatorEmail, null, input.User.ToApprovalMailBody(input.CorrelationId));
             }
             catch (Exception ex)
             {
@@ -52,12 +79,6 @@ namespace SagaToServerless.Durable.Activities.Users
             }
         }
 
-        private string ApprovalMailBody(Guid instanceId)
-        {
-            return
-                $@"<a href='http://localhost:7071/api/approval?instanceid={instanceId}&response=approved'>Approve</a>
-                <br>
-                <a href='http://localhost:7071/api/approval?instanceid={instanceId}&response=rejected'>Reject</a>";
-        }
+        
     }
 }

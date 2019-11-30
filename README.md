@@ -1,5 +1,7 @@
 # SagaToServerless
 
+![SagaToServerless](https://github.com/pregoli/SagaToServerless/blob/master/SagaToServerless.jpeg)
+
 ## Overview
 
 This repository contains an example of workflow runs by adopting the [**Saga Pattern**](https://masstransit-project.com/usage/sagas/) from a side and [**Durable functions**](https://docs.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview) from other.
